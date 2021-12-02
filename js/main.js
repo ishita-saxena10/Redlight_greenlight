@@ -28,6 +28,7 @@ let DEAD_PLAYERS = 0
 let SAFE_PLAYERS = 0
 
 const startBtn = document.querySelector('.start-btn')
+//color light change
 
 //musics
 const bgMusic = new Audio('./music/bg.mp3')
@@ -38,14 +39,15 @@ const loseMusic = new Audio('./music/lose.mp3')
 loader.load( './model/scene.gltf', function ( gltf ){
     scene.add( gltf.scene )
     doll = gltf.scene
-    gltf.scene.position.set(0,-1, 0)
-    gltf.scene.scale.set(0.4, 0.4, 0.4)
+    gltf.scene.position.set(0,.1, -.1)
+    gltf.scene.scale.set(0.3, 0.25, 0.3)
     startBtn.innerText = "start"
 })
 
 function lookBackward(){
     gsap.to(doll.rotation, {duration: .45, y: -3.15})
     setTimeout(() => dallFacingBack = true, 150)
+    //light1=lights('red')
 }
 function lookForward(){
     gsap.to(doll.rotation, {duration: .45, y: 0})
@@ -64,8 +66,26 @@ function createCube(size, posX, rotY = 0, color = 0xfbc851){
 
 //Creating runway
 createCube({w: start_position * 2 + .21, h: 1.5, d: 1}, 0, 0, 0xe5a716).position.z = -1
-createCube({w: .2, h: 1.5, d: 1}, start_position, -.4)
-createCube({w: .2, h: 1.5, d: 1}, end_position, .4)
+createCube({w: .2, h: 1.5, d: 2}, start_position, -.4)
+createCube({w: .2, h: 1.5, d: 2}, end_position, .4)
+//lightsphere
+/*class lights{
+    constructor(color){
+        const geometry = new THREE.SphereGeometry( .5, 100, 100 )
+        const material = new THREE.MeshBasicMaterial( {color} )
+        const lights = new THREE.Mesh( geometry, material )
+        scene.add( lights )
+        lights.position.x = start_position -2
+        lights.position.z = 1
+        lights.position.y = 2
+        }
+    change(){
+        if(doll.lookBackward){
+            color = 'red'
+            }
+        }
+    }
+const li=new lights()*/
 
 
 class Player {
@@ -98,13 +118,13 @@ class Player {
     check(){
         if(this.playerInfo.isDead) return
         if(!dallFacingBack && this.playerInfo.velocity > 0){
-            text.innerText = this.playerInfo.name + " Died!!!"
+            text.innerText = this.playerInfo.name + " is Dead."
             this.playerInfo.isDead = true
             this.stop()
             DEAD_PLAYERS++
             loseMusic.play()
             if(DEAD_PLAYERS == players.length){
-                text.innerText = "Everyone Died!!!"
+                text.innerText = "No one Survived!"
                 gameStat = "ended"
             }
             if(DEAD_PLAYERS + SAFE_PLAYERS == players.length){
@@ -181,6 +201,7 @@ function start(){
             text.innerText = "Time Out!!!"
             loseMusic.play()
             gameStat = "ended"
+            //lights.change()
         }
     }, TIME_LIMIT * 1000)
     startDall()
